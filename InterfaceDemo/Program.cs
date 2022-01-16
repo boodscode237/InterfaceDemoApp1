@@ -17,13 +17,25 @@ namespace InterfaceDemo
 
             Keyboard keyboard = new Keyboard();
             GameController gameController = new GameController();
+            BatteryPoweGameController batteryGc = new BatteryPoweGameController();
+            BatteryPowerKeyBoard batteryKb = new BatteryPowerKeyBoard();
 
             controllers.Add(keyboard);
             controllers.Add(gameController);
+            controllers.Add(batteryGc);
 
             foreach (IComputerController controller in controllers)
             {
                 controller.Connect();
+                if (controller is GameController gc)
+                {
+                   
+                }
+
+                if (controller is IBatteryPowered power)
+                {
+                    
+                }
             }
 
             using (GameController gc = new GameController())
@@ -31,11 +43,17 @@ namespace InterfaceDemo
 
             }
 
+            List<IBatteryPowered> powerds = new List<IBatteryPowered>();
+
+            powerds.Add(batteryGc);
+            powerds.Add(batteryKb);
+
+
             Console.ReadLine();
         }
     }
 
-    public interface IComputerController
+    public interface IComputerController : IDisposable, IBatteryPowered
     {
         void Connect();
         void CurrentKeyPressed();
@@ -52,12 +70,30 @@ namespace InterfaceDemo
         {
 
         }
-        public string ConnectionType { get; set; }
 
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ConnectionType { get; set; }
+        public int BatteryLevel { get; set; }
+    }
+
+    public class BatteryPowerKeyBoard : Keyboard, IBatteryPowered
+    {
+        public int BatteryLevel { get; set; }
+    }
+
+    public interface IBatteryPowered
+    {
+        int BatteryLevel { get; set; }
     }
 
     public class GameController : IComputerController, IDisposable
     {
+        public int BatteryLevel { get; set; }
+
         public void Connect()
         {
             throw new NotImplementedException();
@@ -73,6 +109,11 @@ namespace InterfaceDemo
             throw new NotImplementedException();
         }
 
+    }
+
+    public class BatteryPoweGameController : GameController, IBatteryPowered
+    {
         public int BatteryLevel { get; set; }
+
     }
 }
